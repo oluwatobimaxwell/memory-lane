@@ -23,14 +23,7 @@ export const useSavedLinks = (
     options
   );
 
-export const useSaveLink = () => {
-  const queryClient = useQueryClient();
-  return useMutation((link: SavedLink) => db.saveLink(link), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["saved-links"]);
-    },
-  });
-};
+export const useSaveLink = () => useMutation((link: SavedLink) => db.saveLink(link));
 
 export const useDeleteLink = () => {
   const queryClient = useQueryClient();

@@ -17,7 +17,7 @@ const ModalContainerInner = styled.Pressable`
   background-color: ${(props: any) => hexToRgba(props.theme.background, 0.65)};
 `;
 
-const ModalContent = styled.View`
+const ModalContent = styled.Pressable`
   background-color: ${(props: any) => props.theme.background};
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -81,7 +81,7 @@ export const CustomModal = forwardRef<ModalRef, Props>(({ children }, ref) => {
       >
         <ModalContainer>
           <ModalContainerInner onPress={toggleModal}>
-            <ModalContent>
+            <ModalContent onPress={() => undefined}>
               <ModalContentInner>
                 <ModalPin />
                 {children}

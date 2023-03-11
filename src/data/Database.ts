@@ -44,7 +44,8 @@ class Database {
     return new Promise<SavedLink[]>((resolve, reject) => {
       this.db.transaction((tx) => {
         tx.executeSql(
-          `SELECT * FROM saved_links LIMIT ? OFFSET ?;`,
+            // order by dateSaved DESC
+          `SELECT * FROM saved_links ORDER BY dateSaved DESC LIMIT ? OFFSET ? `,
           [limit, offset],
           (_, result) => {
             const savedLinks: SavedLink[] = [];

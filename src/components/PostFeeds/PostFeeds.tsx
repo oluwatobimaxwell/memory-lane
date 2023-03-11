@@ -20,7 +20,7 @@ const PaddingView = styled.View`
 `;
 
 const PostFeeds = () => {
-  const [limit, setLimit] = React.useState(10);
+  const [limit, setLimit] = React.useState(100);
   const [offset, setOffset] = React.useState(0);
   const { data } = useSavedLinks({ limit, offset });
 

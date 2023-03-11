@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "memory-lane",
-    "slug": "memory-lane",
+    "slug": "my-links",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.oluwatobimaxwell.memorylane"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "162dbb22-3444-4454-9785-0894e27e27ed"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7c297bd8-8576-474f-9d57-dfc3b2e32d14"
+    },
+    "owner": "oluwatobimaxwell"
   }
 }
