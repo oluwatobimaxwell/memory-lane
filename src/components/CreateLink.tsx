@@ -8,8 +8,10 @@ import styled from "styled-components/native";
 import hexToRgba from "hex-to-rgba";
 import DropdownSelect from "./SelectInput";
 import { SavedLink } from "../data/Database";
-import { useSaveLink } from "../data/useDatabase";
+import { useGetLinkByLink, useSaveLink } from "../data/useDatabase";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLinkData } from "../api/hooks/useLinkData";
+import Post from "./PostFeeds/Post";
 
 const TextInput = styled.TextInput`
   width: 100%;
@@ -24,6 +26,7 @@ const TextInput = styled.TextInput`
 const Button = styled.Button`
   width: 100%;
   margin-top: 10px;
+  font-size: 12px;
 `;
 
 const Description = styled.Text`
@@ -37,7 +40,6 @@ const CreateLink = () => {
 
   const {
     control,
-    register,
     handleSubmit,
     formState: { isValid },
     getValues,
@@ -46,76 +48,102 @@ const CreateLink = () => {
     mode: "onChange",
     defaultValues: {
       link: "",
-      priority: "low"
+      priority: "low",
     },
   });
 
   const queryClient = useQueryClient();
   const saveLink = useSaveLink();
+  const link = getValues("link");
+  const { isLoading, ...linkData } = useLinkData(link);
+
+  const { data: alreadySavedLink, remove } = useGetLinkByLink(link, {
+    enabled: !!link,
+  });
 
   const onSubmit = (data: SavedLink) => {
-    const link  = {
-        ...data,
-        dateSaved: new Date().toISOString()
-    }
+    const link = {
+      ...data,
+      ...linkData,
+      dateSaved: new Date().toISOString(),
+    } as SavedLink;
     saveLink.mutate(link, {
-        onSuccess: () => {
-            reset();
-            queryClient.invalidateQueries(["saved-links"]);
-            modal.current?.toggleModal();
-        }
+      onSuccess: () => {
+        reset();
+        queryClient.invalidateQueries(["saved-links"]);
+        modal.current?.toggleModal();
+      },
     });
   };
 
   const toggleModal = () => {
     modal.current?.toggleModal();
   };
+
+  const closeAndDone = () => {
+    reset();
+    remove();
+  };
+
   return (
     <>
       <FloatingButtonComponent onPress={toggleModal}>+</FloatingButtonComponent>
       <CustomModal ref={modal}>
-        <Description>
-          Enter a link to save to your link collection and share with your
-          friends. You also set a priority level for the link.
-        </Description>
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder="Paste link here"
+        {alreadySavedLink ? (
+          <>
+            <Description>
+              You have already saved this link. You can view it in your link
+              collection.
+            </Description>
+            <Post item={alreadySavedLink} />
+            <Button title="Add Another Link" onPress={closeAndDone} />
+          </>
+        ) : (
+          <>
+            <Description>
+              Enter a link to save to your link collection and share with your
+              friends. You also set a priority level for the link.
+            </Description>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Paste link here"
+                />
+              )}
+              name="link"
             />
-          )}
-          name="link"
-        />
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <DropdownSelect
-              placeholder="Select priority"
-              onSelect={onChange}
-              options={[
-                { label: "Low", value: "low" },
-                { label: "Medium", value: "medium" },
-                { label: "High", value: "high" },
-              ]}
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <DropdownSelect
+                  placeholder="Select priority"
+                  onSelect={onChange}
+                  options={[
+                    { label: "Low", value: "low" },
+                    { label: "Medium", value: "medium" },
+                    { label: "High", value: "high" },
+                  ]}
+                />
+              )}
+              name="priority"
             />
-          )}
-          name="priority"
-        />
-        <Button
-          disabled={!isValid}
-          title="Add Link"
-          onPress={handleSubmit(onSubmit)}
-        />
+            <Button
+              disabled={!isValid}
+              title="Add Link"
+              onPress={handleSubmit(onSubmit)}
+            />
+          </>
+        )}
       </CustomModal>
     </>
   );

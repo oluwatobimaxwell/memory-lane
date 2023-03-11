@@ -1,4 +1,4 @@
-import Database, { SavedLink } from "./Database";
+import Database, { SavedLink, WebsiteGroup } from "./Database";
 import {
   UseQueryOptions,
   useQuery,
@@ -33,3 +33,23 @@ export const useDeleteLink = () => {
     },
   });
 };
+
+export const useGetLinkByLink = (
+  link: string,
+  options?: Omit<UseQueryOptions<SavedLink | null, any>, "queryKey" | "queryFn">
+) =>
+  useQuery<SavedLink | null, any>(
+    ["saved-links", link],
+    () => db.getLinkByLink(link),
+    options
+  );
+
+export const useGetWebsiteGroup = (
+  options?: Omit<UseQueryOptions<WebsiteGroup[], any>, "queryKey" | "queryFn">
+) =>
+  useQuery<WebsiteGroup[], any>(
+    ["saved-links", "website-group"],
+    () => db.getAllDistinctTitlesAndFavicons(),
+    options
+  );
+

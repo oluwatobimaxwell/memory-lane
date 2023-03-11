@@ -1,8 +1,5 @@
 import { default as parseUrl } from "url-parse";
-import {
-  useGetYoutubeData,
-  useLinkHeader,
-} from "../../api/hooks/getLinkHeader";
+import { useGetYoutubeData, useLinkHeader } from "./getLinkHeader";
 
 function getWebsiteAddress(link: string): string {
   const url = parseUrl(link);
@@ -10,7 +7,8 @@ function getWebsiteAddress(link: string): string {
 }
 
 export const useLinkData = (link: string) => {
-  const { data, isLoading } = useLinkHeader(link);
+
+  const { data, isLoading } = useLinkHeader(link, { enabled: !!link });
   const possibleSiteName = getWebsiteAddress(data?.url || "");
   const favicon = data?.favicons[0];
   const title = possibleSiteName || data?.siteName;
@@ -18,7 +16,7 @@ export const useLinkData = (link: string) => {
   const image = data?.images[0] || data?.videos[0] || data?.favicons[0];
 
   const { data: youtube, isLoading: youtubeLoading } = useGetYoutubeData(link, {
-    enabled: title?.includes("youtube"),
+    enabled: !!link && title?.includes("youtube"),
   });
   if (youtube) {
     return {

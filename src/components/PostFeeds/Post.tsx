@@ -2,13 +2,14 @@ import React, { FC } from "react";
 import { DateTime } from "luxon";
 // @ts-ignore
 import styled from "styled-components/native";
-import { useLinkData } from "./useLinkData";
 import { Linking } from "react-native";
 import PostSkeleton from "./PostSkeleton";
 import { SavedLink } from "../../data/Database";
 import { MoreOptionsButton } from "../MoreOption";
 import { useDeleteLink } from "../../data/useDatabase";
 import * as Sharing from "expo-sharing";
+import { useLinkData } from "../../api/hooks/useLinkData";
+import { Container } from "../ui";
 
 const Header = styled.View`
   align-items: center;
@@ -89,16 +90,6 @@ const DateSaved = styled.Text`
   font-weight: 500;
 `;
 
-const Container = styled.Pressable`
-  background-color: ${(props: any) =>
-    props.theme.theme === "dark"
-      ? `rgba(255, 255, 255, 0.1)`
-      : `rgba(0, 0, 0, 0.1)`};
-  border-radius: 15px;
-  margin-bottom: 10px;
-  overflow: hidden;
-`;
-
 const Body = styled.View`
   padding: 10px;
 `;
@@ -106,9 +97,8 @@ const Body = styled.View`
 const Post: FC<{
   item: SavedLink;
 }> = ({ item }) => {
-  const { favicon, title, description, image, isLoading } = useLinkData(
-    item.link
-  );
+
+  const { favicon, title, description, image } = item || {};
 
   const deleteLink = useDeleteLink();
 
@@ -142,10 +132,6 @@ const Post: FC<{
       icon: "copy",
     },
   ];
-
-  if (isLoading) {
-    return <PostSkeleton />;
-  }
 
   return (
     <Container onPress={() => openLink(item.link)}>

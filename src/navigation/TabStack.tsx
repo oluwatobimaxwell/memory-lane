@@ -6,6 +6,7 @@ import { useTheme } from "@react-navigation/native";
 import { useThemeContext } from "../theme/themContext";
 import MoreOption from "../components/MoreOption";
 import hexToRgba from "hex-to-rgba";
+import WebsiteGroups from "../screens/WebsiteGroups";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,6 +14,7 @@ const iconNames = {
   Home: "home",
   Main: "home",
   Categories: "list",
+  Websites: "globe",
 }
 
 function TabStack() {
@@ -47,6 +49,7 @@ function TabStack() {
       })}
     >
       <Tab.Screen name="Main" component={PostFeeds} />
+      <Tab.Screen name="Websites" component={WebsiteGroups} />
       <Tab.Screen name="Categories" component={MoreOption} />
     </Tab.Navigator>
   );
