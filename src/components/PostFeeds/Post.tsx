@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import { DateTime } from "luxon";
 // @ts-ignore
 import styled from "styled-components/native";
@@ -8,7 +8,7 @@ import PostSkeleton from "./PostSkeleton";
 import { SavedLink } from "../../data/Database";
 import { MoreOptionsButton } from "../MoreOption";
 import { useDeleteLink } from "../../data/useDatabase";
-import * as Sharing from 'expo-sharing';
+import * as Sharing from "expo-sharing";
 
 const Header = styled.View`
   align-items: center;
@@ -17,7 +17,10 @@ const Header = styled.View`
   margin-top: 10px;
   border-top-style: dashed;
   border-top-width: 0.5px;
-  border-top-color: ${(props: any) => (props.theme.theme === "dark" ? `rgba(255, 255, 255, 0.05)` : `rgba(0, 0, 0, 0.05)`)};
+  border-top-color: ${(props: any) =>
+    props.theme.theme === "dark"
+      ? `rgba(255, 255, 255, 0.05)`
+      : `rgba(0, 0, 0, 0.05)`};
 `;
 
 const AppIcon = styled.Image`
@@ -87,7 +90,10 @@ const DateSaved = styled.Text`
 `;
 
 const Container = styled.Pressable`
-  background-color: ${(props: any) => (props.theme.theme === "dark" ? `rgba(255, 255, 255, 0.1)` : `rgba(0, 0, 0, 0.1)`)};
+  background-color: ${(props: any) =>
+    props.theme.theme === "dark"
+      ? `rgba(255, 255, 255, 0.1)`
+      : `rgba(0, 0, 0, 0.1)`};
   border-radius: 15px;
   margin-bottom: 10px;
   overflow: hidden;
@@ -97,9 +103,9 @@ const Body = styled.View`
   padding: 10px;
 `;
 
-const Post = ({ item }: {
-    item: SavedLink;
-}) => {
+const Post: FC<{
+  item: SavedLink;
+}> = ({ item }) => {
   const { favicon, title, description, image, isLoading } = useLinkData(
     item.link
   );
@@ -114,29 +120,28 @@ const Post = ({ item }: {
     try {
       await Sharing.shareAsync(item.link);
     } catch (error) {
-      console.error('Error sharing link:', error);
-      console.log(item.link)
+      console.error("Error sharing link:", error);
+      console.log(item.link);
     }
   };
 
-
   const moreOptions = [
     {
-      label: 'Set Reminder',
-      onPress: () => console.log('Copy Link'),
-      icon: 'bell',
+      label: "Set Reminder",
+      onPress: () => console.log("Copy Link"),
+      icon: "bell",
     },
     {
-        label: 'Share',
-        onPress: handleShare,
-        icon: 'share',
+      label: "Share",
+      onPress: handleShare,
+      icon: "share",
     },
     {
-        label: 'Copy Link',
-        onPress: () => console.log('Copy Link'),
-        icon: 'copy',
+      label: "Copy Link",
+      onPress: () => console.log("Copy Link"),
+      icon: "copy",
     },
-]
+  ];
 
   if (isLoading) {
     return <PostSkeleton />;
@@ -145,13 +150,8 @@ const Post = ({ item }: {
   return (
     <Container onPress={() => openLink(item.link)}>
       {image && <Image source={{ uri: image }} />}
-      <PriorityLabel priority={item.priority}>
-        {item.priority}
-      </PriorityLabel>
-      <MoreOptionsButton 
-        options={moreOptions} 
-        onDelete={handleDelete}
-      />
+      <PriorityLabel priority={item.priority}>{item.priority}</PriorityLabel>
+      <MoreOptionsButton options={moreOptions} onDelete={handleDelete} />
       <Body>
         {description && <Caption numberOfLines={3}>{description}</Caption>}
         <Header>
@@ -159,9 +159,9 @@ const Post = ({ item }: {
             <AppIcon source={{ uri: favicon }} />
             <AppName numberOfLines={1}>{title}</AppName>
           </UserWrapper>
-        <DateSaved>
-          {DateTime.fromISO(item.dateSaved).toFormat("dd LLL yyyy, hh:mma")}
-        </DateSaved>
+          <DateSaved>
+            {DateTime.fromISO(item.dateSaved).toFormat("dd LLL yyyy, hh:mma")}
+          </DateSaved>
         </Header>
       </Body>
     </Container>

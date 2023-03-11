@@ -1,4 +1,5 @@
 import React, { FC, useRef } from "react";
+import { Alert } from "react-native";
 // @ts-ignore
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -95,14 +96,16 @@ interface OptionProps {
   onPress: () => void;
   icon?: string;
   hasBorder?: boolean;
+  labelStyle?: any;
+  iconStyle?: any;
 }
 
-const ItemButton: FC<OptionProps> = ({ label, onPress, icon, hasBorder }) => {
+const ItemButton: FC<OptionProps> = ({ label, onPress, icon, hasBorder, labelStyle, iconStyle }) => {
   return (
     <ModalOptionContainer hasBorder={hasBorder}>
       <TouchableOpacity onPress={onPress}>
-        {icon && <ButtonIcon name={icon} />}
-        <ModalOption>{label}</ModalOption>
+        {icon && <ButtonIcon name={icon} style={iconStyle} />}
+        <ModalOption style={labelStyle}>{label}</ModalOption>
       </TouchableOpacity>
     </ModalOptionContainer>
   );
@@ -118,6 +121,26 @@ export const MoreOptionsButton: FC<Props> = ({ options = [], onDelete }) => {
   const handleOptionPress = (option: PressItem) => {
     option.onPress();
     toggleModal();
+  };
+
+  const onHandleDelete = () => {
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this link?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            onDelete();
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -140,9 +163,11 @@ export const MoreOptionsButton: FC<Props> = ({ options = [], onDelete }) => {
         <ModalOptionWrapper>
           <ItemButton
             label="Remove link"
-            onPress={onDelete}
+            onPress={onHandleDelete}
             hasBorder={false}
             icon="trash"
+            labelStyle={{ color: "red" }}
+            iconStyle={{ color: "red" }}
           />
         </ModalOptionWrapper>
       </CustomModal>
