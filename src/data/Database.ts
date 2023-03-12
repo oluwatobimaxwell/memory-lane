@@ -68,19 +68,65 @@ class Database {
     });
   }
 
-  getAllSavedLinks(limit: number, offset: number): Promise<SavedLink[]> {
+  getAllSavedLinks(
+    limit: number,
+    offset: number,
+    filter?: Partial<SavedLink>,
+    query?: string
+  ): Promise<SavedLink[]> {
     return new Promise<SavedLink[]>((resolve, reject) => {
       this.db.transaction((tx) => {
+        const whereClauses: string[] = [];
+        const whereParams: any[] = [];
+  
+        if (filter) {
+          if (filter.link) {
+            whereClauses.push("link LIKE ?");
+            whereParams.push(`%${filter.link}%`);
+          }
+          if (filter.dateSaved) {
+            whereClauses.push("dateSaved = ?");
+            whereParams.push(filter.dateSaved);
+          }
+          if (filter.priority) {
+            whereClauses.push("priority = ?");
+            whereParams.push(filter.priority);
+          }
+          if (filter.favicon) {
+            whereClauses.push("favicon = ?");
+            whereParams.push(filter.favicon);
+          }
+          if (filter.title) {
+            whereClauses.push("title LIKE ?");
+            whereParams.push(`%${filter.title}%`);
+          }
+          if (filter.description) {
+            whereClauses.push("description LIKE ?");
+            whereParams.push(`%${filter.description}%`);
+          }
+          if (filter.image) {
+            whereClauses.push("image LIKE ?");
+            whereParams.push(`%${filter.image}%`);
+          }
+        }
+  
+        if (query) {
+          whereClauses.push("(link LIKE ? OR title LIKE ? OR description LIKE ?)");
+          whereParams.push(`%${query}%`, `%${query}%`, `%${query}%`);
+        }
+  
+        const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+  
         tx.executeSql(
-          `SELECT * FROM saved_links ORDER BY dateSaved DESC LIMIT ? OFFSET ? `,
-          [limit, offset],
+          `SELECT * FROM saved_links ${where} ORDER BY dateSaved DESC LIMIT ? OFFSET ? `,
+          [...whereParams, limit, offset],
           (_, result) => {
             const savedLinks: SavedLink[] = [];
-
+  
             for (let i = 0; i < result.rows.length; i++) {
               savedLinks.push(result.rows.item(i));
             }
-
+  
             resolve(savedLinks);
           },
           (_, error) => {
@@ -92,6 +138,7 @@ class Database {
       });
     });
   }
+  
 
   deleteLink(id: number): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {

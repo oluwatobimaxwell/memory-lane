@@ -4,6 +4,7 @@ import { Alert } from "react-native";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { CustomModal, ModalRef } from "./CustomModal";
+import { spacing } from "../constants/dimensions";
 
 const Container = styled.View`
   flex: 1;
@@ -23,8 +24,8 @@ const ButtonContainer = styled.Pressable`
   justify-content: center;
   align-items: center;
   position: absolute;
-  right: 10px;
-  top: 10px;
+  right: ${spacing.sm}px;
+  top: ${spacing.sm}px;
   z-index: 100;
 `;
 
@@ -35,8 +36,8 @@ const ModalOptionContainer = styled.View<{
     props.theme.theme === "dark"
       ? `rgba(255, 255, 255, 0.05)`
       : `rgba(0, 0, 0, 0.15)`};
-  padding-horizontal: 16px;
-  padding-vertical: 8px;
+  padding-horizontal: ${spacing.md}px;
+  padding-vertical: ${spacing.sm}px;
   border-bottom-width: ${(props: any) => (props.hasBorder ? 1 : 0)}px;
   border-bottom-color: ${(props: any) =>
     props.theme.theme === "dark"
@@ -51,7 +52,7 @@ const ModalOptionWrapper = styled.View`
       : `rgba(0, 0, 0, 0.05)`};
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: ${spacing.md}px;
 `;
 
 const ModalOption = styled.Text`
@@ -73,7 +74,7 @@ const ButtonIcon = styled(Icon)`
     props.theme.theme === "dark"
       ? `rgba(255, 255, 255, 0.8)`
       : `rgba(0, 0, 0, 0.8)`};
-  margin-right: 10px;
+  margin-right: ${spacing.sm}px;
 `;
 
 const TouchableOpacity = styled.TouchableOpacity`
@@ -137,6 +138,7 @@ export const MoreOptionsButton: FC<Props> = ({ options = [], onDelete }) => {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
+            toggleModal();
             onDelete();
           }
         }

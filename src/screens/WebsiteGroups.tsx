@@ -9,20 +9,12 @@ const Container = styled.View`
   background-color: ${(props: any) => props.theme.background};
 `;
 
-const ScrollView = styled.ScrollView`
-  padding: 10px;
-`;
-
-const PaddingView = styled.View`
-  height: 90px;
-`;
-
 const WebsiteGroups = () => {
   const { data } = useGetWebsiteGroup();
 
   return (
     <Container>
-      <WebsitesGridComponent websites={data || []} />
+      <WebsitesGridComponent websites={(data || []) as any} />
     </Container>
   );
 };

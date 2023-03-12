@@ -1,32 +1,50 @@
-import { default as parseUrl } from "url-parse";
+import {
+  extractWebsiteName,
+  isValidLink,
+  getWebsiteAddress,
+} from "../../utils/extractWebsiteName";
 import { useGetYoutubeData, useLinkHeader } from "./getLinkHeader";
 
-function getWebsiteAddress(link: string): string {
-  const url = parseUrl(link);
-  return url.hostname;
-}
-
-export const useLinkData = (link: string) => {
-
-  const { data, isLoading } = useLinkHeader(link, { enabled: !!link });
+export const useLinkData = (inputLink: string) => {
+  const { data, isLoading } = useLinkHeader(inputLink, {
+    enabled: !!inputLink,
+  });
   const possibleSiteName = getWebsiteAddress(data?.url || "");
   const favicon = data?.favicons[0];
-  const title = possibleSiteName || data?.siteName;
-  const description = data?.description || data?.title;
+  const title = extractWebsiteName(
+    possibleSiteName || data?.siteName || inputLink || ""
+  );
+  // const description = data?.description || data?.title;
   const image = data?.images[0] || data?.videos[0] || data?.favicons[0];
+  const link = data?.url || inputLink;
 
-  const { data: youtube, isLoading: youtubeLoading } = useGetYoutubeData(link, {
-    enabled: !!link && title?.includes("youtube"),
-  });
+  let isValid = isValidLink(inputLink);
+
+  let description = data?.description || data?.title;
+  if (!isValid) {
+    description = `${description}\n${inputLink}`;
+  }
+
+  if (!description) {
+    description = inputLink;
+  }
+
+  const { data: youtube, isLoading: youtubeLoading } = useGetYoutubeData(
+    inputLink,
+    {
+      enabled: !!inputLink && title?.includes("youtube"),
+    }
+  );
   if (youtube) {
     return {
       favicon,
       // @ts-ignore
-      title: youtube?.provider_name || "YouTube",
-      description: youtube.title,
+      title: extractWebsiteName(youtube?.provider_name || "YouTube"),
+      description: isValid ? youtube?.title : `${youtube?.title}\n${inputLink}`,
       image: youtube.thumbnail_url,
       isLoading: youtubeLoading,
+      link,
     };
   }
-  return { favicon, title, description, image, isLoading };
+  return { favicon, title, description, image, link, isLoading };
 };

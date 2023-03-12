@@ -1,13 +1,14 @@
 import hexToRgba from "hex-to-rgba";
 import React from "react";
-import { FlatList, Image, ListRenderItem, Text, View } from "react-native";
+import { FlatList, ListRenderItem } from "react-native";
 // @ts-ignore
 import styled from "styled-components/native";
 import { WebsiteGroup } from "../data/Database";
-import { extractWebsiteName } from "../utils/extractWebsiteName";
+import { useNavigation } from "../navigation/useNavigatioin";
+import EmptyList from "./PostFeeds/EmptyList";
+import ScreenLayout from "./ScreenLayout";
 import { Container } from "./ui";
-
-  
+import { spacing } from "../constants/dimensions";
 
 const WebsiteContainer = styled(Container)`
   flex: 1;
@@ -15,7 +16,12 @@ const WebsiteContainer = styled(Container)`
   justify-content: center;
   padding: 16px;
   border-radius: 8px;
-  margin: 8px;
+  ${({ isLast, isLeft }: any) =>
+    !isLast &&
+    `
+    margin-right: ${isLeft ? spacing.sm : 0}px;
+    margin-left: ${isLeft ? 0 : spacing.sm}px;
+  `};
 `;
 
 const WebsiteImage = styled.Image`
@@ -24,13 +30,13 @@ const WebsiteImage = styled.Image`
 `;
 
 const IconWrapper = styled.View`
-    width: 45px;
-    height: 45px;
-    border-radius: 10px;
-    background-color: ${({ theme }: any) => hexToRgba(theme.background, 0.35)};
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background-color: ${({ theme }: any) => hexToRgba(theme.background, 0.35)};
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
 `;
 
 const WebsiteTitle = styled.Text`
@@ -47,14 +53,32 @@ const WebsiteNumLinks = styled.Text`
   color: ${({ theme }: any) => hexToRgba(theme.text, 0.5)};
 `;
 
-const WebsitesGrid = styled.FlatList``;
+const EmptyListWrapper = styled.View`
+  flex: 1;
+`;
 
-const Website: React.FC<WebsiteGroup> = ({ title, favicon, count }) => {
+interface WebsiteProps extends WebsiteGroup {
+  index: number;
+  isLast: boolean;
+}
+
+const Website: React.FC<WebsiteProps> = ({
+  title,
+  favicon,
+  count,
+  index,
+  isLast,
+}) => {
+  const { bottomNavigation } = useNavigation();
   return (
-    <WebsiteContainer>
-        <IconWrapper>
-            <WebsiteImage source={{ uri: favicon }} />
-        </IconWrapper>
+    <WebsiteContainer
+      isLeft={index % 2 === 0}
+      isLast={isLast}
+      onPress={() => bottomNavigation.navigate("Links", { title })}
+    >
+      <IconWrapper>
+        <WebsiteImage source={{ uri: favicon }} />
+      </IconWrapper>
       <WebsiteTitle numberOfLines={1}>{title}</WebsiteTitle>
       <WebsiteNumLinks>{`${count} links saved`}</WebsiteNumLinks>
     </WebsiteContainer>
@@ -62,27 +86,44 @@ const Website: React.FC<WebsiteGroup> = ({ title, favicon, count }) => {
 };
 
 interface Props {
-  websites: WebsiteGroup[];
+  websites: WebsiteProps[];
 }
 
 const WebsitesGridComponent: React.FC<Props> = ({ websites }) => {
-
-  const renderWebsiteTile: ListRenderItem<WebsiteGroup> = ({ item }) => {
+  const renderWebsiteTile: ListRenderItem<WebsiteProps> = ({ item, index }) => {
     return (
-      <Website title={extractWebsiteName(item.title)} favicon={item.favicon} count={item.count} />
+      <Website
+        title={item.title}
+        favicon={item.favicon}
+        count={item.count}
+        index={index}
+        isLast={index === websites.length - 1 && websites.length % 2 === 1}
+      />
     );
   };
 
   return (
-    <FlatList
-      data={websites}
-      renderItem={renderWebsiteTile}
-      numColumns={2}
-      contentContainerStyle={{
-        justifyContent: "space-between",
-        padding: 8,
-      }}
-    />
+    <ScreenLayout>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={websites}
+        renderItem={renderWebsiteTile}
+        numColumns={2}
+        style={{
+          padding: spacing.md,
+        }}
+        contentContainerStyle={{
+          flex: 1,
+        }}
+        ListEmptyComponent={() => (
+          <EmptyListWrapper>
+            <EmptyList
+              text={`No links saved yet. You can add items by clicking the + button.`}
+            />
+          </EmptyListWrapper>
+        )}
+      />
+    </ScreenLayout>
   );
 };
 

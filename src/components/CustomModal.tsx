@@ -3,48 +3,44 @@ import React, { forwardRef, useImperativeHandle, useState } from "react";
 import styled from "styled-components/native";
 import { KeyboardAvoidingView, Modal, Platform } from "react-native";
 import { useThemeContext } from "../theme/themContext";
-import hexToRgba from "hex-to-rgba";
+import { BlurView } from "expo-blur";
+import { spacing } from "../constants/dimensions";
 
 const ModalContainer = styled.Pressable`
   flex: 1;
   justify-content: flex-end;
-  background-color: ${(props: any) => hexToRgba(props.theme.text, 0.35)};
 `;
 
 const ModalContainerInner = styled.Pressable`
   flex: 1;
   justify-content: flex-end;
-  background-color: ${(props: any) => hexToRgba(props.theme.background, 0.65)};
+  background-color: rgba(0, 0, 0, ${(props: any) => props.theme.theme === "dark" ? 0.85 : 0.25});
 `;
 
 const ModalContent = styled.Pressable`
-  background-color: ${(props: any) => props.theme.background};
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
+  overflow: hidden;
 `;
 
 const ModalContentInner = styled.View`
-  padding-horizontal: 15px;
-  padding-top: 15px;
+  padding-horizontal: ${spacing.md}px;
+  padding-top: ${spacing.md}px;
   padding-bottom: 30px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  background-color: ${(props: any) =>
-    props.theme.theme === "dark"
-      ? `rgba(255, 255, 255, 0.05)`
-      : `rgba(0, 0, 0, 0.05)`};
-`;
+  `;
 
 const ModalPin = styled.View`
   background-color: ${(props: any) =>
     props.theme.theme === "dark"
-      ? `rgba(255, 255, 255, 0.15)`
-      : `rgba(0, 0, 0, 0.15)`};
+      ? `rgba(255, 255, 255, 0.25)`
+      : `rgba(0, 0, 0, 0.25)`};
   width: 80px;
   height: 5px;
   border-radius: 5px;
   margin: auto;
-  margin-bottom: 10px;
+  margin-bottom: ${spacing.md}px;
 `;
 
 interface Props {
@@ -81,12 +77,17 @@ export const CustomModal = forwardRef<ModalRef, Props>(({ children }, ref) => {
       >
         <ModalContainer>
           <ModalContainerInner onPress={toggleModal}>
-            <ModalContent onPress={() => undefined}>
-              <ModalContentInner>
-                <ModalPin />
-                {children}
-              </ModalContentInner>
-            </ModalContent>
+              <ModalContent onPress={() => undefined}>
+            <BlurView
+              intensity={100}
+              tint={contextTheme.theme}
+            >
+                <ModalContentInner>
+                  <ModalPin />
+                  {children}
+                </ModalContentInner>
+            </BlurView>
+              </ModalContent>
           </ModalContainerInner>
         </ModalContainer>
       </KeyboardAvoidingView>

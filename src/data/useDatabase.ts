@@ -11,6 +11,8 @@ const db = new Database();
 interface Params {
   limit?: number;
   offset?: number;
+  filter?: Partial<SavedLink>;
+  query?: string;
 }
 
 export const useSavedLinks = (
@@ -19,11 +21,18 @@ export const useSavedLinks = (
 ) =>
   useQuery<SavedLink[], any>(
     ["saved-links", params],
-    () => db.getAllSavedLinks(params.limit || 10, params.offset || 0),
+    () =>
+      db.getAllSavedLinks(
+        params.limit || 10,
+        params.offset || 0,
+        params.filter,
+        params.query
+      ),
     options
   );
 
-export const useSaveLink = () => useMutation((link: SavedLink) => db.saveLink(link));
+export const useSaveLink = () =>
+  useMutation((link: SavedLink) => db.saveLink(link));
 
 export const useDeleteLink = () => {
   const queryClient = useQueryClient();
@@ -52,4 +61,3 @@ export const useGetWebsiteGroup = (
     () => db.getAllDistinctTitlesAndFavicons(),
     options
   );
-

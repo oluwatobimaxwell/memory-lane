@@ -1,44 +1,63 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
+import { ScrollViewProps } from "react-native";
 // @ts-ignore
 import styled from "styled-components/native";
 import Post from "./Post";
 import { useSavedLinks } from "../../data/useDatabase";
 import EmptyList from "./EmptyList";
-import CreateLink from "../CreateLink";
+import ScreenLayout from "../ScreenLayout";
+import { useNavigation, useParams } from "../../navigation/useNavigatioin";
+import ListTop from "./ListTop";
+import { spacing } from "../../constants/dimensions";
 
-const Container = styled.View`
-  flex: 1;
-  background-color: ${(props: any) => props.theme.background};
+const ScrollView = styled.ScrollView<ScrollViewProps>`
+  padding-bottom: ${spacing.md}px;
+  padding-horizontal: ${spacing.md}px;
+  padding-top: ${spacing.md + 125}px;
 `;
 
-const ScrollView = styled.ScrollView`
-  padding: 10px;
-`;
-
-const PaddingView = styled.View`
-  height: 90px;
+const EndOfScrollComponent = styled.View`
+  height: ${(spacing.md * 1.25) + 200}px;
 `;
 
 const PostFeeds = () => {
-  const [limit, setLimit] = React.useState(100);
+  const perPage = 100;
+  const [limit, setLimit] = React.useState(perPage);
   const [offset, setOffset] = React.useState(0);
-  const { data } = useSavedLinks({ limit, offset });
+  const filter = useParams();
+  const [query, setQuery] = React.useState("");
+  const { data, isLoading } = useSavedLinks({ limit, offset, filter, query });
 
+  const { bottomNavigation } = useNavigation();
+
+  useLayoutEffect(() => {
+    bottomNavigation.setOptions({ title: filter?.title });
+  }, [bottomNavigation, filter]);
 
   return (
-    <Container>
+    <ScreenLayout>
+      <ListTop
+        onSearch={(text) => {
+          setQuery(text);
+          setOffset(0);
+        }}
+        isLoading={isLoading}
+      />
       {data?.length === 0 ? (
-        <EmptyList />
+        <EmptyList
+          text={`No links saved yet. You can add items by clicking the + button.`}
+        />
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {(data || []).map((post) => (
-            <Post key={post.id} item={post} />
-          ))}
-          <PaddingView />
-        </ScrollView>
+        <>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {(data || []).map((post) => (
+              <Post key={post.id} item={post} />
+            ))}
+            <EndOfScrollComponent />
+          </ScrollView>
+        </>
       )}
-      <CreateLink />
-    </Container>
+    </ScreenLayout>
   );
 };
 

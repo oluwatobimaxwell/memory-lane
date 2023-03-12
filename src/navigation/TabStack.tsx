@@ -4,7 +4,6 @@ import { PostFeeds } from "../components/PostFeeds";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useTheme } from "@react-navigation/native";
 import { useThemeContext } from "../theme/themContext";
-import MoreOption from "../components/MoreOption";
 import hexToRgba from "hex-to-rgba";
 import WebsiteGroups from "../screens/WebsiteGroups";
 
@@ -12,10 +11,8 @@ const Tab = createBottomTabNavigator();
 
 const iconNames = {
   Home: "home",
-  Main: "home",
-  Categories: "list",
-  Websites: "globe",
-}
+  Links: "link",
+};
 
 function TabStack() {
   const theme = useTheme();
@@ -29,7 +26,7 @@ function TabStack() {
           return <Icon name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: contextTheme.text,
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: "gray",
         tabBarActiveBackgroundColor: "transparent",
         tabBarInactiveBackgroundColor: "transparent",
         headerStyle: {
@@ -37,20 +34,21 @@ function TabStack() {
         },
         headerTitleStyle: {
           color: contextTheme.text,
+          textTransform: "capitalize",
         },
         tabBarStyle: {
           backgroundColor: hexToRgba(contextTheme.background, 0.98),
           borderTopColor: hexToRgba(contextTheme.text, 0.1),
-          position: 'absolute',
+          position: "absolute",
         },
         tabBarLabelStyle: {
           color: contextTheme.text,
+          textTransform: "capitalize",
         },
       })}
     >
-      <Tab.Screen name="Main" component={PostFeeds} />
-      <Tab.Screen name="Websites" component={WebsiteGroups} />
-      <Tab.Screen name="Categories" component={MoreOption} />
+      <Tab.Screen name="Home" component={WebsiteGroups} />
+      <Tab.Screen name="Links" component={PostFeeds} />
     </Tab.Navigator>
   );
 }

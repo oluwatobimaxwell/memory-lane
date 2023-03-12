@@ -1,10 +1,6 @@
 import React from "react";
-import { DateTime } from "luxon";
 // @ts-ignore
 import styled from "styled-components/native";
-import { useLinkHeader } from "../../api/hooks/getLinkHeader";
-import { useLinkData } from "./useLinkData";
-import { Linking } from "react-native";
 import hexToRgba from "hex-to-rgba";
 
 const Header = styled.View`

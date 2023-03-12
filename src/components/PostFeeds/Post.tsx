@@ -1,15 +1,15 @@
 import React, { FC } from "react";
 import { DateTime } from "luxon";
+import Toast from 'react-native-toast-message';
 // @ts-ignore
 import styled from "styled-components/native";
 import { Linking } from "react-native";
-import PostSkeleton from "./PostSkeleton";
 import { SavedLink } from "../../data/Database";
 import { MoreOptionsButton } from "../MoreOption";
 import { useDeleteLink } from "../../data/useDatabase";
 import * as Sharing from "expo-sharing";
-import { useLinkData } from "../../api/hooks/useLinkData";
 import { Container } from "../ui";
+import hexToRgba from "hex-to-rgba";
 
 const Header = styled.View`
   align-items: center;
@@ -41,8 +41,9 @@ const UserWrapper = styled.View`
 
 const AppName = styled.Text`
   font-weight: 500;
-  color: #cacaca;
+  color:${(props: any) => hexToRgba(props.theme.text, 0.75)};
   font-size: 12px;
+  text-transform: capitalize;
 `;
 
 const Image = styled.Image`
@@ -97,13 +98,31 @@ const Body = styled.View`
 const Post: FC<{
   item: SavedLink;
 }> = ({ item }) => {
-
-  const { favicon, title, description, image } = item || {};
+  const { favicon, title, description, image, id } = item || {};
 
   const deleteLink = useDeleteLink();
 
   const handleDelete = () => {
-    deleteLink.mutate(item.id as number);
+    deleteLink.mutate(item.id as number, {
+      onSuccess: () => {
+        Toast.show({
+          type: "success",
+          position: "bottom",
+          text1: "Link Deleted",
+          text2: "Link has been deleted successfully",
+          visibilityTime: 3000,
+        });
+      },
+      onError: (error) => {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Error Deleting Link",
+          text2: "An error occurred while deleting link",
+          visibilityTime: 3000,
+        });
+      }
+    });
   };
 
   const handleShare = async () => {
@@ -137,7 +156,7 @@ const Post: FC<{
     <Container onPress={() => openLink(item.link)}>
       {image && <Image source={{ uri: image }} />}
       <PriorityLabel priority={item.priority}>{item.priority}</PriorityLabel>
-      <MoreOptionsButton options={moreOptions} onDelete={handleDelete} />
+      {id && <MoreOptionsButton options={moreOptions} onDelete={handleDelete} />}
       <Body>
         {description && <Caption numberOfLines={3}>{description}</Caption>}
         <Header>
@@ -145,9 +164,11 @@ const Post: FC<{
             <AppIcon source={{ uri: favicon }} />
             <AppName numberOfLines={1}>{title}</AppName>
           </UserWrapper>
-          <DateSaved>
-            {DateTime.fromISO(item.dateSaved).toFormat("dd LLL yyyy, hh:mma")}
-          </DateSaved>
+          {item.dateSaved && (
+            <DateSaved>
+              {DateTime.fromISO(item.dateSaved).toFormat("dd LLL yyyy, hh:mma")}
+            </DateSaved>
+          )}
         </Header>
       </Body>
     </Container>

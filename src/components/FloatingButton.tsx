@@ -3,6 +3,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 // @ts-ignore
 import styled from 'styled-components/native';
+import { spacing } from '../constants/dimensions';
 
 interface FloatingButtonProps {
   onPress: () => void;
@@ -11,8 +12,8 @@ interface FloatingButtonProps {
 
 const FloatingButtonContainer = styled.View`
   position: absolute;
-  bottom: 90px;
-  right: 10px;
+  bottom: ${spacing.md + 80}px;
+  right: ${spacing.md}px;
   background-color: ${(props: any) => props.theme.text};
   width: 45px;
   height: 45px;

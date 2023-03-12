@@ -1,3 +1,5 @@
+import { default as parseUrl } from "url-parse";
+
 export function extractWebsiteName(url: string): string {
   try {
     // Remove the protocol from the URL
@@ -24,4 +26,15 @@ export function extractWebsiteName(url: string): string {
     console.log("Error extracting website name:", url);
     return url;
   }
+}
+
+export function isValidLink(text: string): boolean {
+  const urlRegex = /^(ftp|http|https):\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/;
+  return urlRegex.test(text);
+}
+
+
+export function getWebsiteAddress(link: string): string {
+  const url = parseUrl(link);
+  return url.hostname;
 }
