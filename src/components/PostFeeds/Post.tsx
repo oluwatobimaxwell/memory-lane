@@ -58,7 +58,7 @@ const Caption = styled.Text<{
   font-weight: 600;
 `;
 
-const PriorityLabel = styled.Text<{
+const PriorityLabelWrapper = styled.View<{
   priority: "high" | "low" | "medium";
 }>`
   background-color: ${(props: any) => {
@@ -72,17 +72,20 @@ const PriorityLabel = styled.Text<{
     }
   }};
   border-radius: 20px;
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
   margin-right: 5px;
   padding: 5px 10px;
   border-radius: 5px;
   overflow: hidden;
-  text-transform: uppercase;
   position: absolute;
   top: 10px;
   left: 10px;
+`;
+
+const PriorityLabel = styled.Text`
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
 `;
 
 const DateSaved = styled.Text`
@@ -155,7 +158,9 @@ const Post: FC<{
   return (
     <Container onPress={() => openLink(item.link)}>
       {image && <Image source={{ uri: image }} />}
-      <PriorityLabel priority={item.priority}>{item.priority}</PriorityLabel>
+      <PriorityLabelWrapper priority={item.priority}>
+        <PriorityLabel>{item.priority}</PriorityLabel>
+      </PriorityLabelWrapper>
       {id && <MoreOptionsButton options={moreOptions} onDelete={handleDelete} />}
       <Body>
         {description && <Caption numberOfLines={3}>{description}</Caption>}
