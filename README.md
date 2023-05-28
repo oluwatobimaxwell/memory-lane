@@ -2,6 +2,11 @@
 
 Memory Lane is a React Native application that serves as a digital catalog for web links. It's your personal tool to remember and organize web links for easy future access. It offers an intuitive user interface for adding, viewing, and categorizing links.
 
+![IMG_4739](https://github.com/oluwatobimaxwell/memory-lane/assets/39818137/aef3bb24-fe19-462e-98c7-0e5acd10e12c)
+
+
+![IMG_4738](https://github.com/oluwatobimaxwell/memory-lane/assets/39818137/e78da5ac-e3ed-47da-92c9-1fbffd48d5d3)
+
 ## Features
 - **Link Saving**: Users can save their visited links into the application with ease.
 - **Link Organization**: Categorize each saved link for easy retrieval in the future.
